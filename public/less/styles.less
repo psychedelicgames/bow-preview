@@ -3,13 +3,39 @@ html, body {
   width: 100%;
   height: 100%;
   text-align: center;
-
+  overflow: hidden;
   box-sizing: border-box;
   user-select: none;
 }
+html, body {
+  font-family: 'Questrial', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
+@font-face {
+  font-family: 'BigNoodleTooOblique';
+  src: url('../fonts/BigNoodleTooOblique.eot');
+  src: url('../fonts/BigNoodleTooOblique.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/BigNoodleTooOblique.woff2') format('woff2'),
+  url('../fonts/BigNoodleTooOblique.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+    font-family: 'BigNoodleTitling';
+    src: url('../fonts/BigNoodleTitling.eot');
+    src: url('../fonts/BigNoodleTitling.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/BigNoodleTitling.woff2') format('woff2'),
+        url('../fonts/BigNoodleTitling.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
 *, *:before, *:after {
   box-sizing: inherit;
+}
+#container {
+  height: 100%;
 }
 section.header {
   background-color: #080708;
@@ -44,16 +70,18 @@ section.header {
       display: flex;
       text-align: center;
       a {
-        color: $color-white;
+        color: #fff;
         display: flex;
         padding: 0 15px;
         flex: 1;
         justify-content: center;
         flex-flow: column;
-        font-size: 17px;
+        font-size: 23px;
+        font-family: 'BigNoodleTooOblique';
+        color: #ff3939;
         &:hover {
           text-decoration: none !important;
-          color: $color-one;
+          color: #ff3939;
         }
         &.discord-btn img {
           width: 23px;
@@ -62,6 +90,62 @@ section.header {
       }
     }
   }
+}
+.canvas-container {
+  background-color: #353535;
+  position: absolute;
+  overflow: hidden;
+  top: 40px;
+  bottom: 0px;
+  width: 100%;
+  transition: all 2s;
+  .canvas-effects {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    pointer-events: none;
+  }
+  .canvas:focus {
+    outline: none !important;
+  }
+  #canvas {
+    background-color: #353535;
+    cursor: crosshair;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
+}
+.btn {
+  font-family: 'Questrial', sans-serif !important;
+  border-radius: 5px !important;
+  padding: 5px 35px !important;
+  color: #fff;
+  font-size: 14px !important;
+  display: inline-block;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  background: rgb(251,53,53);
+  background: -moz-linear-gradient(top, rgba(251,53,53,1) 0%, rgba(229,31,31,1) 100%);
+  background: -webkit-linear-gradient(top, rgba(251,53,53,1) 0%,rgba(229,31,31,1) 100%);
+  background: linear-gradient(to bottom, rgba(251,53,53,1) 0%,rgba(229,31,31,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fb3535', endColorstr='#e51f1f',GradientType=0 );
+  transition: transform .1s ease-out !important;
+  transform: scale(1);
+}
+.btn:hover {
+  transition: transform .1s;
+  transform: scale(1.05);
+  color: #fff;
 }
 #name-prompt-overlay {
   position: absolute;
@@ -147,38 +231,6 @@ section.header {
     }
   }
 }
-.canvas-container {
-  background-color: #353535;
-  position: absolute;
-  overflow: hidden;
-  top: 40px;
-  bottom: 40px;
-  width: 100%;
-  height: 100%;
-  transition: all 2s;
-  .canvas-effects {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    opacity: 1;
-    z-index: 190;
-    pointer-events: none;
-  }
-  .canvas:focus {
-    outline: none !important;
-  }
-  #canvas {
-    background-color: #353535;
-    cursor: crosshair;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    
-  }
-}
-
 
 #chat-display {
   height: 570px;

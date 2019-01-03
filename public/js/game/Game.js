@@ -185,7 +185,7 @@ Game.prototype.update = function() {
        //   }
        // }
      })
-     console.log(camera);
+     // console.log(camera);
    }
 
    //console.timeEnd("framer_posiciones");
