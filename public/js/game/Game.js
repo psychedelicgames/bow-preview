@@ -244,6 +244,14 @@ Game.prototype.draw = function() {
           this.powerups[i]['name']);
     }
 
+    // Draw the explosion next.
+    for (var i = 0; i < this.explosions.length; ++i) {
+      this.drawing.drawExplosion( this.viewPort.toCanvasCoords(this.explosions[i]), this.explosions[i]);
+      //this.drawing.foreground_rain();
+      //mala idea, se ponen las cosas un poco pesadas :)
+      //console.log(this.explosions);
+    }
+
     // Draw the tank that represents the player.
     if (this.self) {
       this.drawing.drawTank(
