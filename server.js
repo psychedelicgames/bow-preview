@@ -17,13 +17,18 @@ process.argv.forEach(function(value, index, array) {
 /************************************************************/
 /* dependencias *********************************************/
 
-var bodyParser    = require('body-parser');
-var express       = require('express');
-var http          = require('http');
-var morgan        = require('morgan');
-var socketIO      = require('socket.io');
-var swig          = require('swig');
-var Game          = require('./lib/Game');
+var request     = require('request');
+var express     = require('express');
+var bodyParser  = require('body-parser');
+var fs          = require('fs');
+var http        = require('http');
+var https       = require('https');
+var compression = require('compression');
+var path        = require('path')
+var morgan      = require('morgan');
+var socketIO    = require('socket.io');
+var swig        = require('swig');
+var Game        = require('./lib/Game');
 
 /************************************************************/
 /* inicialización *******************************************/
@@ -32,6 +37,11 @@ var app     = express();
 var server  = http.Server(app);
 var io      = socketIO(server);
 var game    = new Game();
+
+/************************************************************/
+/* calzamos compressor **************************************/
+
+app.use(compression());
 
 /************************************************************/
 /* defeinicion de app ***************************************/
@@ -51,6 +61,40 @@ app.get('/', function(request, response) {
     dev_mode: DEV_MODE
   });
 });
+
+/************************************************************/
+/* escape de la info ****************************************/
+
+function escapesafe(toOutput){
+  if(toOutput != null) {
+    return toOutput.replace(/\&/g, '&amp;')
+        .replace(/\</g, '&lt;')
+        .replace(/\>/g, '&gt;')
+        .replace(/\"/g, '&quot;')
+        .replace(/\'/g, '&#x27')
+        .replace(/\//g, '&#x2F');
+  }
+}
+
+/************************************************************/
+/* preloader audios *****************************************/
+
+//definimos audio_files como cadena
+var audio_files = {};
+
+//buscamos los archivos de audio y los cargamos en arrays
+//audio_files.main        = fs.readdirSync('./public/audio/');
+audio_files.order_1       = fs.readdirSync('./public/audio/powers/1/');
+audio_files.order_2       = fs.readdirSync('./public/audio/powers/2/');
+audio_files.order_3       = fs.readdirSync('./public/audio/powers/3/');
+audio_files.order_4       = fs.readdirSync('./public/audio/powers/4/');
+audio_files.order_5       = fs.readdirSync('./public/audio/powers/5/');
+audio_files.order_6       = fs.readdirSync('./public/audio/powers/6/');
+audio_files.harm          = fs.readdirSync('./public/audio/harm/');
+audio_files.dies          = fs.readdirSync('./public/audio/dies/');
+audio_files.eliminacion   = fs.readdirSync('./public/audio/eliminacion/');
+audio_files.spawn         = fs.readdirSync('./public/audio/spawn/');
+
 
 /************************************************************/
 /* conexión y funciones de sock.io **************************/
@@ -98,6 +142,218 @@ socket.on('chat-client-to-server', function(data) {
     message: data
   });
 });
+
+/************************************************************/
+  /* comprar powerup ******************************************/
+
+  socket.on('comprar-power', function(keydown, callback) {
+    //definimos feedback
+    var feedback = {};
+    //revision
+    console.log(keydown);
+    //buscamos la información del players
+    var player = game.all_player_info(socket.id);
+    //revisamos si player es null
+    if(player === null) { return console.log('No player found.'); }
+    //revisamos si player es shadow
+    if(player.kind == 'shadow') {
+      feedback.advice = 'you_are_dead';
+      callback(feedback);
+      return console.log('you are dead.');
+    }
+    //revisamos si player es drone
+    if(player.kind == 'drone') {
+      feedback.advice = 'drones_have_no_power';
+      callback(feedback);
+      return console.log('drones have no power.');
+    }
+    //revisamos si puede pedir una más
+    if (player.orders_remaining <= 0) {
+      feedback.advice = 'no_orders_remaining';
+      callback(feedback);
+      return console.log('no orders remaining.');
+    }
+    //en caso que le queden
+    if (player.orders_remaining > 0) { player.orders_remaining -= 1; }
+
+    //si lo compró, previo a aplicarlo, le acomodamos las variasble
+    player.powerups     = null;
+    player.shotCooldown = PLAYER_DEFAULT_SHOT_COOLDOWN;
+    player.hitboxSize   = PLAYER_DEFAULT_HITBOX_SIZE;
+    player.vmag         = PLAYER_DEFAULT_VELOCITY_MAGNITUDE;
+    player.shieldsize   = 0;
+
+    //escudo con 8 de defensa
+    if(keydown.keydown == '49') {
+      //arma principal equipada
+      player.main_ammo = 'Tachyonic Shields Prolog';
+      //le damos el poder
+      player.powerups = {
+      shield_powerup: {
+      //buscar nombre de escudos en freelancer
+      name: 'Tachyonic Shields Prolog',
+      data: 8,
+      expirationTime: (new Date()).getTime() + (30 * 1000)
+      }
+      };
+      //enviamos información al canal.
+      io.sockets.emit('dialogo-servidor-usuarios', {
+        name: player.name,
+        message: "uses Tachyonic Shields Prolog",
+        message_class: "order"
+      });
+    }
+
+    //serious fire.
+    /*
+    if(keydown.keydown == '50') {
+      //arma principal equipada
+      player.main_ammo = 'Assassin MK1';
+      //le damos el poder
+      player.powerups = {
+      order_quick: {
+      name: 'Assassin MK1',
+      data: 3,
+      expirationTime: (new Date()).getTime() + (30 * 1000)
+      }
+      };
+      //enviamos información al canal.
+      io.sockets.emit('dialogo-servidor-usuarios', {
+        name: player.name,
+        message: "uses Assassin MK1!",
+        message_class: "order"
+      });
+    }
+
+    //killing spree
+    if(keydown.keydown == '51') {
+      //arma principal equipada
+      player.main_ammo = 'Vladof relics 1.0';
+      //le damos el poder
+      player.powerups = {
+      order_fork: {
+      name: 'Vladof relics 1.0',
+      data: 2,
+      expirationTime: (new Date()).getTime() + (30 * 1000)
+      }
+      };
+      //enviamos información al canal.
+      io.sockets.emit('dialogo-servidor-usuarios', {
+        name: player.name,
+        message: "uses Vladof relics 1.0",
+        message_class: "order"
+      });
+    }
+    */
+    //speedrunner
+    if(keydown.keydown == '50') {
+      //arma principal equipada
+      player.main_ammo = 'Moonwalk Class A';
+      //le damos el poder
+      player.powerups = {
+      order_speed: {
+      name: 'Moonwalk Class A',
+      data: 1.666,
+      expirationTime: (new Date()).getTime() + (30 * 1000)
+      }
+      };
+      //enviamos información al canal.
+      io.sockets.emit('dialogo-servidor-usuarios', {
+        name: player.name,
+        message: "uses Moonwalk Class A.",
+        message_class: "order"
+      });
+    }
+
+    //The Slow Co: Frozen
+    if(keydown.keydown == '51') {
+      //arma principal equipada
+      player.main_ammo = 'The Slow Co: Frozen';
+      //le damos el poder
+      player.powerups = {
+      order_slow: {
+      name: 'The Slow Co: Frozen',
+      expirationTime: (new Date()).getTime() + (30 * 1000)
+      }
+      };
+      //enviamos información al canal.
+      io.sockets.emit('dialogo-servidor-usuarios', {
+        name: player.name,
+        message: "uses The Slow Co: Frozen ammo",
+        message_class: "order"
+      });
+    }
+    /*
+    //Heal
+    if(keydown.keydown == '54') {
+      //arma principal equipada
+      player.main_ammo = 'Healco: basic care';
+      //le damos el poder
+      player.powerups = {
+      order_heal: {
+      name: 'Healco: basic care',
+      expirationTime: (new Date()).getTime() + (30 * 1000)
+      }
+      };
+      //enviamos información al canal.
+      io.sockets.emit('dialogo-servidor-usuarios', {
+        name: player.name,
+        message: "uses Healco: basic care",
+        message_class: "order"
+      });
+    }
+    */
+
+    //informamos
+    feedback.advice = 'Success';
+
+    //respondemos siempre, enviamos la información al browser
+    callback(feedback);
+
+      //sunflower
+      /*
+      if(keydown.keydown == '52') {
+        //le damos el poder
+        player.powerups = {
+        shotgun_powerup: {
+        name: 'sunflower',
+        data: 12,
+        expirationTime: duracion
+        }
+        };
+        //enviamos información al canal.
+        io.sockets.emit('dialogo-servidor-usuarios', {
+        name: " ",
+        message: body.user.username + ' uses power 4.',
+        message_class: "order"
+        });
+      }
+      //laser
+      if(keydown.keydown == '53') {
+        //le damos el poder
+        player.powerups = {
+        rapidfire_powerup: {
+        name: 'ray',
+        data: 12,
+        expirationTime: duracion
+        }
+        };
+        //enviamos información al canal.
+        io.sockets.emit('dialogo-servidor-usuarios', {
+        name: " ",
+        message: body.user.username + ' uses power 5.',
+        message_class: "order"
+        });
+      }
+      */
+      //calculamos saldo en usd
+      //body.user.balance_usd = usd_balance(body.user.available_balance);
+    //}
+
+    //});
+
+
+  });
 
 /************************************************************/
 /* desconexión de usuario ***********************************/
