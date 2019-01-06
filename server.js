@@ -6,6 +6,30 @@ var PORT_NUMBER = process.env.PORT || 80;
 var FRAME_RATE = 1000.0 / 60.0;
 
 /************************************************************/
+/* Variables de player **************************************/
+
+PLAYER_TURN_RATE                  = 0.005; //radianes sobre ms
+PLAYER_DEFAULT_VELOCITY_MAGNITUDE = 0.3; //pixels per millisecond.
+PLAYER_DEFAULT_SHOT_COOLDOWN      = 80; //milliseconds
+PLAYER_DEFAULT_HITBOX_SIZE        = 20; //pixels
+PLAYER_SHIELD_HITBOX_SIZE         = 45; //pixels
+PLAYER_MAX_HEALTH                 = 20; //health units
+PLAYER_MINIMUM_RESPAWN_BUFFER     = 1000; //distance in pixels
+
+/************************************************************/
+/* Variables previas de player ******************************/
+
+/*
+Player.TURN_RATE = 0.005;
+Player.DEFAULT_VELOCITY_MAGNITUDE = 0.3;
+Player.DEFAULT_SHOT_COOLDOWN = 800;
+Player.DEFAULT_HITBOX_SIZE = 20;
+Player.SHIELD_HITBOX_SIZE = 45;
+Player.MAX_HEALTH = 10;
+Player.MINIMUM_RESPAWN_BUFFER = 1000;
+*/
+
+/************************************************************/
 /* developer mode opcional **********************************/
 
 process.argv.forEach(function(value, index, array) {
@@ -35,8 +59,12 @@ var Game        = require('./lib/Game');
 
 var app     = express();
 var server  = http.Server(app);
-var io      = socketIO(server);
 var game    = new Game();
+
+/************************************************************/
+/* accesibilidad global a io ********************************/
+
+io = socketIO(server);
 
 /************************************************************/
 /* calzamos compressor **************************************/
