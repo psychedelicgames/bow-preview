@@ -29,26 +29,29 @@ Drawing.TILE_SIZE             = 2500;
 //public\media
 
 Drawing.IMG_SRCS = {
-  'explosion':              '/public/media/explosion.png',
-  'smoke':                  '/public/media/smoke.svg',
-  'panzer':                 '/public/media/panzer.png',
-  'self_turret':            '/public/media/self_turret.png',
-  'other_tank':             '/public/media/other_tank.png',
-  'other_turret':           '/public/media/other_turret.png',
-  'drone':                  '/public/media/drone.png',
-  'shadow':                 '/public/media/broken_panzer.png',
-  'nada':                   '/public/media/nada.png',
-  'shield':                 '/public/media/shield.png',
+  //machines
+  'explosion_media':        '/public/media/game/machines/explosion_02.png',
+  'smoke':                  '/public/media/game/machines/smoke.svg',
+  'panzer':                 '/public/media/game/machines/panzer_02.png',
+  'self_turret':            '/public/media/game/machines/cannon_03.png',
+  'other_tank':             '/public/media/game/machines/enemy_panzer.png',
+  'other_turret':           '/public/media/game/machines/enemy_cannon.png',
+  'drone':                  '/public/media/game/machines/drone.png',
+  'shadow':                 '/public/media/game/machines/broken_panzer_02.png',
+  'nada':                   '/public/media/game/machines/nada.png',
+  'shield':                 '/public/media/game/machines/shield_02.png',
+  //ammo
   'ammo_regular':           '/public/media/game/ammo/regular.png',
   'ammo_healco_care':       '/public/media/game/ammo/healco_care.png',
   'ammo_slowco_frozen':     '/public/media/game/ammo/slowco_frozen.png',
+  //map
   'tile':                   '/public/media/maps/camo-black.png',
+  //map powerups
   'shotgun_powerup':        '/public/media/shotgun_powerup.png',
   'speedboost_powerup':     '/public/media/speedboost_powerup.png',
   'rapidfire_powerup':      '/public/media/rapidfire_powerup.png',
   'shield_powerup':         '/public/media/shield_powerup.png',
   'healthpack_powerup':     '/public/media/healthpack_powerup.png',
-  'explosion_media':        '/public/media/explosion.png'
 };
 
 /************************************************************/
