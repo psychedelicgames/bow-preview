@@ -246,6 +246,8 @@ Game.prototype.draw = function() {
 
     // Draw the explosion next.
     for (var i = 0; i < this.explosions.length; ++i) {
+      //por donde andan las explosiones?
+      console.log(this.explosions);
       this.drawing.drawExplosion( this.viewPort.toCanvasCoords(this.explosions[i]), this.explosions[i]);
       //this.drawing.foreground_rain();
       //mala idea, se ponen las cosas un poco pesadas :)
