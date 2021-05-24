@@ -1,0 +1,11 @@
+---
+application:
+  name: "bow-preview"
+  project: "ttee"
+  organization: "QoveryCommunity"
+routers:
+- name: "main-bow-preview"
+  routes:
+  - application_name: "bow-preview"
+    paths:
+    - "/*"
